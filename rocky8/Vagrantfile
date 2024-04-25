@@ -1,0 +1,12 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+Vagrant.configure("2") do |config|
+ config.ssh.insert_key = false
+  config.vm.define :"rocky8" do |rocky|
+    rocky.vm.box = "jcpetro97/rocky8"
+    rocky.vm.hostname = "rocky8"
+    rocky.vm.network "private_network", type: "dhcp"
+    rocky.vm.provision :hosts, :sync_hosts => true
+    rocky.vm.synced_folder '.', '/vagrant', disabled: false
+  end
+end  
