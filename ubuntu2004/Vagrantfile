@@ -1,0 +1,12 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+Vagrant.configure("2") do |config|
+ config.ssh.insert_key = false
+  config.vm.define :"ubuntu2004" do |ub|
+    ub.vm.box = "jcpetro97/ubuntu2004"
+    ub.vm.hostname = "ubuntu2004"
+    ub.vm.network "private_network", type: "dhcp"
+    ub.vm.provision :hosts, :sync_hosts => true
+    ub.vm.synced_folder '.', '/vagrant', disabled: false
+  end
+end  
