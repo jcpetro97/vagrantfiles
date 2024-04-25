@@ -1,0 +1,12 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+Vagrant.configure("2") do |config|
+ config.ssh.insert_key = false
+  config.vm.define :"debian12" do |deb|
+    deb.vm.box = "jcpetro97/debian12"
+    deb.vm.hostname = "debian12"
+    deb.vm.network "private_network", type: "dhcp"
+    deb.vm.provision :hosts, :sync_hosts => true
+    deb.vm.synced_folder '.', '/vagrant', disabled: false
+  end
+end  
