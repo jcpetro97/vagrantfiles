@@ -1,0 +1,19 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+Vagrant.configure("2") do |config|
+ config.ssh.insert_key = false
+ config.vm.define "debian12" do |deb|     
+     deb.vm.hostname = "debian12"   
+     deb.vm.provider :docker do |docker|
+         docker.image = "jcpetro97/debian12-vagrant:latest"
+         docker.remains_running = true
+         docker.has_ssh = true
+         docker.privileged = true
+         docker.volumes = ["/sys/fs/cgroup:/sys/fs/cgroup:rw"]
+         docker.create_args = ["--cgroupns=host"]
+     end # docker    
+    deb.vm.network "private_network", type: "dhcp"
+    deb.vm.provision :hosts, :sync_hosts => true
+    deb.vm.synced_folder '.', '/vagrant', disabled: false
+ end
+end
