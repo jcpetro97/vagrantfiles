@@ -1,12 +1,30 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
-Vagrant.configure("2") do |config|
- config.ssh.insert_key = false
-  config.vm.define :"debian12" do |deb|
-    deb.vm.box = "jcpetro97/debian12"
-    deb.vm.hostname = "debian12"
-    deb.vm.network "private_network", type: "dhcp"
-    deb.vm.provision :hosts, :sync_hosts => true
-    deb.vm.synced_folder '.', '/vagrant', disabled: false
-  end
-end  
+OS_IMAGE= "jcpetro97/debian12"
+SUBNET= "192.168.61"
+boxes = 
+[
+    # Change Subnet as needed. Ranges should be 192.168.56 -> 192.168.63 but can be changed.  See README.md 
+    { :name => "node1", :eth1 => "#{SUBNET}.11", :mem => "1024", :cpu => "1", :image => OS_IMAGE },
+    { :name => "node2", :eth1 => "#{SUBNET}.12", :mem => "1024", :cpu => "1", :image => OS_IMAGE },
+    { :name => "node3", :eth1 => "#{SUBNET}.13", :mem => "1024", :cpu => "1", :image => OS_IMAGE }
+]
+
+Vagrant.configure(2) do |config|
+  boxes.each do |opts|
+    config.vm.define opts[:name] do |config|
+      config.vm.box = opts[:image]
+      config.ssh.insert_key = false
+      config.vm.hostname = opts[:name]
+      config.vm.provider "virtualbox" do |v|
+        v.customize ["modifyvm", :id, "--memory", opts[:mem]]
+        v.customize ["modifyvm", :id, "--cpus", opts[:cpu]]
+      end
+      config.vm.network :private_network, ip: opts[:eth1]
+      config.vm.synced_folder '.', '/vagrant', disabled: false
+    end
+  end  
+end
+
+
+

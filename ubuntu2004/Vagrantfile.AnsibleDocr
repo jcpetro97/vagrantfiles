@@ -1,10 +1,10 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
-OS_IMAGE="jcpetro97/ubuntu2204-vagrant:latest"
+OS_IMAGE="jcpetro97/ubuntu2004-vagrant:latest"
 boxes = 
 [
-    { :name => "node1", :image => OS_IMAGE },
+    { :name => "cn", :image => OS_IMAGE },
     { :name => "node2", :image => OS_IMAGE },
     { :name => "node3", :image => OS_IMAGE }
 ]

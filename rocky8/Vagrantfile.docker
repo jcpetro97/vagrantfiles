@@ -1,19 +1,30 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
+
+OS_IMAGE="jcpetro97/rocky8-vagrant:latest"
+boxes = 
+[
+    { :name => "node1", :image => OS_IMAGE },
+    { :name => "node2", :image => OS_IMAGE },
+    { :name => "node3", :image => OS_IMAGE }
+]
+
 Vagrant.configure("2") do |config|
- config.ssh.insert_key = false
- config.vm.define "rocky8" do |rocky|     
-     rocky.vm.hostname = "rocky8"   
-     rocky.vm.provider :docker do |docker|
-         docker.image = "jcpetro97/rocky8-vagrant:latest"
-         docker.remains_running = true
-         docker.has_ssh = true
-         docker.privileged = true
-         docker.volumes = ["/sys/fs/cgroup:/sys/fs/cgroup:rw"]
-         docker.create_args = ["--cgroupns=host"]
-     end # docker    
-    rocky.vm.network "private_network", type: "dhcp"
-    rocky.vm.provision :hosts, :sync_hosts => true
-    rocky.vm.synced_folder '.', '/vagrant', disabled: false
+ boxes.each do |opts|
+    config.ssh.insert_key = false
+    config.vm.define opts[:name] do |config|
+        config.vm.hostname = opts[:name]   
+        config.vm.provider :docker do |docker|
+            docker.image = opts[:image]
+            docker.remains_running = true
+            docker.has_ssh = true
+            docker.privileged = true
+            docker.volumes = ["/sys/fs/cgroup:/sys/fs/cgroup:rw"]
+            docker.create_args = ["--cgroupns=host"]
+        end # docker    
+        config.vm.network "private_network", type: "dhcp"
+        config.vm.provision :hosts, :sync_hosts => true
+        config.vm.synced_folder '.', '/vagrant', disabled: false
+    end
  end
 end
