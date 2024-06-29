@@ -1,0 +1,58 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+#OS_IMAGE="jcpetro97/ubuntu2004-vagrant:latest"
+OS_IMAGE=ENV['BOX']
+boxes = 
+[
+    { :name => "node1", :image => OS_IMAGE },
+    { :name => "node2", :image => OS_IMAGE },
+    { :name => "node3", :image => OS_IMAGE }
+]
+
+Vagrant.configure("2") do |config|
+ boxes.each do |opts|
+    config.ssh.insert_key = false
+    config.vm.define opts[:name] do |config|
+        config.vm.hostname = opts[:name]   
+        config.vm.provider :docker do |docker|
+            docker.image = opts[:image]
+            docker.remains_running = true
+            docker.has_ssh = true
+            docker.privileged = true
+            docker.volumes = ["/sys/fs/cgroup:/sys/fs/cgroup:rw"]
+            docker.create_args = ["--cgroupns=host"]
+        end # docker    
+        config.vm.network "private_network", type: "dhcp"
+        config.vm.provision :hosts, :sync_hosts => true
+        config.vm.synced_folder '.', '/vagrant', disabled: false
+        config.vm.provision "shell", inline: "mkdir /etc/sshkeys.local"
+        config.vm.provision "shell", inline: "cp /vagrant/files/vagrant.pub /etc/sshkeys.local"
+        config.vm.provision "shell", inline: $hostsetup
+    end
+ end
+end
+
+$hostsetup = <<HOSTSETUP
+  #!/bin/bash
+  # Check to see if /etc/ssh/sshd_config.d exists
+  if [ -d /etc/ssh/sshd_config.d ] ; then
+      /usr/bin/cp /vagrant/files/pubkeys.conf /etc/ssh/sshd_config.d/02-pubkeys.conf  
+      if [ ! -f /etc/redhat-release ] ; then
+          echo "restarting ssh on a Debian based system"
+          systemctl restart ssh.service
+      else
+          echo "restarting ssh on a RedHat based system" 
+          systemctl restart sshd.service
+      fi
+  else 
+      sed -i '/AuthorizedKeysFile/c\AuthorizedKeysFile /etc/sshkeys/%u.pub /etc/sshkeys.local/%u.pub' /etc/ssh/sshd_config
+      if [ -f /etc/redhat-release ] ; then
+          echo "restarting ssh on a RedHat based system"
+          systemctl restart sshd.service
+      else
+          echo "restarting ssh on a Debian based system" 
+          systemctl restart ssh.service
+      fi
+  fi
+HOSTSETUP
