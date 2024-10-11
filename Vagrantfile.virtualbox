@@ -1,7 +1,7 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 #OS_IMAGE= "jcpetro97/ubuntu2004"
-OS_IMAGE=ENV['BOX']
+OS_IMAGE=ENV['BOX'] || "jcpetro97/ubuntu2204"
 SUBNET= "192.168.61"
 boxes = 
 [
