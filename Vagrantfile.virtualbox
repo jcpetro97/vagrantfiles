@@ -2,7 +2,7 @@
 # vi: set ft=ruby :
 #OS_IMAGE= "jcpetro97/ubuntu2004"
 OS_IMAGE=ENV['BOX'] || "jcpetro97/ubuntu2404"
-SUBNET= "192.168.61"
+SUBNET= "192.168.56"
 boxes = 
 [
     # Change Subnet as needed. Ranges should be 192.168.56 -> 192.168.63 but can be changed.  See README.md 
