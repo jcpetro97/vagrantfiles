@@ -32,3 +32,6 @@ I have changed my networks.conf file so that the HostOnly range woul be (192.168
 ```
 
 **WARNING:** if you add the `/etc/vbox/networks.conf` there must be content inside, or virtualbox won't function correctly.
+
+
+**NOTE:** The default subnet for the Vagrantfile.virtualbox is `192.168.56` so you may need to change that in the Vagrantfile.
