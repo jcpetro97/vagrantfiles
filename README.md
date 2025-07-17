@@ -25,4 +25,10 @@ This will add all of the entire 192.168.0 range.  You can also add multiple subn
 * 192.168.0.56/21 192.168.10.0/24
 ```
 
+I have changed my networks.conf file so that the HostOnly range woul be (192.168.56 -> 192.168.80 )
+
+```
+* 192.168.56.0/21 192.168.64.0/20 192.168.80.0/24 192.168.10.0/24
+```
+
 **WARNING:** if you add the `/etc/vbox/networks.conf` there must be content inside, or virtualbox won't function correctly.
