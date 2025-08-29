@@ -1,0 +1,53 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+OS_IMAGE=ENV['BOX'] || "jcpetro97/ubuntu2404"
+boxes = 
+[
+    { :name => "node1", :mem => "1024", :cpu => "1", :image => OS_IMAGE },
+    { :name => "node2", :mem => "1024", :cpu => "1", :image => OS_IMAGE },
+    { :name => "node3", :mem => "1024", :cpu => "1", :image => OS_IMAGE }
+
+]
+
+Vagrant.configure(2) do |config|
+  boxes.each do |opts|
+    config.vm.define opts[:name] do |config|
+      config.vm.box = opts[:image]
+      config.ssh.insert_key = false
+      config.vm.hostname = opts[:name]
+      config.vm.provider "virtualbox" do |v|
+        v.customize ["modifyvm", :id, "--memory", opts[:mem]]
+        v.customize ["modifyvm", :id, "--cpus", opts[:cpu]]
+      end
+      config.vm.synced_folder '.', '/vagrant', disabled: false
+      config.vm.provision "shell", inline: "mkdir /etc/sshkeys.local"
+      config.vm.provision "shell", inline: "cp /vagrant/files/vagrant.pub /etc/sshkeys.local"
+      config.vm.provision "shell", inline: $hostsetup
+    end
+  end  
+end
+$hostsetup = <<HOSTSETUP
+  #!/bin/bash
+  # Check to see if /etc/ssh/sshd_config.d exists
+  if [ -d /etc/ssh/sshd_config.d ] ; then
+      /usr/bin/cp /vagrant/files/pubkeys.conf /etc/ssh/sshd_config.d/02-pubkeys.conf  
+      if [ ! -f /etc/redhat-release ] ; then
+          echo "restarting ssh on a Debian based system"
+          systemctl restart ssh.service
+      else
+          echo "restarting ssh on a RedHat based system" 
+          systemctl restart sshd.service
+      fi
+  else 
+      sed -i '/AuthorizedKeysFile/c\AuthorizedKeysFile /etc/sshkeys/%u.pub /etc/sshkeys.local/%u.pub' /etc/ssh/sshd_config
+      if [ -f /etc/redhat-release ] ; then
+          echo "restarting ssh on a RedHat based system"
+          systemctl restart sshd.service
+      else
+          echo "restarting ssh on a Debian based system" 
+          systemctl restart ssh.service
+      fi
+  fi
+HOSTSETUP
+
+
