@@ -3,11 +3,11 @@
 
 |Linux Distro|Version|Last Updated|
 |------------|-------|------------|
-|Debian|12|04/24/2024|
-|Ubuntu|2004|04/24/2024|
-|Ubuntu|2204|04/24/2024|
-|Rocky|8|04/24/2024|
-|Rocky|9|04/24/2024|
+|Debian|12|09/11/2025|
+|Ubuntu|2204|09/11/2025|
+|Ubuntu|2404|09/11/2025|
+|Rocky|8|09/11/2025|
+|Rocky|9|09/11/2025|
 
 
 **NOTE:** For Virtualbox, Linux/MacOS hosts can only have a total of 128 HostOnly networks defined.  In Virtualbox 6.1.30, they started to enforce that limitation. By default the allowed HostOnly ranges are 192.168.56.0/21 ( 192.168.56 -> 192.168.63).  The valid networks can be changed. To change the subnets, do the following:
@@ -25,7 +25,7 @@ This will add all of the entire 192.168.0 range.  You can also add multiple subn
 * 192.168.0.56/21 192.168.10.0/24
 ```
 
-I have changed my networks.conf file so that the HostOnly range woul be (192.168.56 -> 192.168.80 )
+I have changed my networks.conf file so that the HostOnly range would be (192.168.56 -> 192.168.80 )
 
 ```
 * 192.168.56.0/21 192.168.64.0/20 192.168.80.0/24 192.168.10.0/24
