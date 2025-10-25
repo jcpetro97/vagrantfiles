@@ -3,6 +3,17 @@
 
 #OS_IMAGE="jcpetro97/ubuntu2004-vagrant:latest"
 OS_IMAGE=ENV['BOX']
+if OS_IMAGE.nil? || OS_IMAGE.strip.empty?
+puts <<~USAGE
+    Error: The environment variable BOX is not set.
+    
+    Usage:
+        BOX=<image_name>:latest vagrant up
+    Example:
+        BOX=jcpetro97/ubuntu2404-vagrant:latest vagrant up
+USAGE
+exit 1
+end
 boxes = 
 [
     { :name => "node1", :image => OS_IMAGE },
